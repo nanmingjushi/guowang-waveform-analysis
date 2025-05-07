@@ -1,0 +1,171 @@
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #3f37c9;
+    --accent-color: #4895ef;
+    --light-color: #f8f9fa;
+    --dark-color: #212529;
+    --success-color: #4bb543;
+    --error-color: #ff3333;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Noto Sans SC', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+}
+
+.upload-card {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.upload-card.drag-active {
+    border: 2px dashed var(--primary-color);
+    background-color: rgba(67, 97, 238, 0.05);
+}
+
+.upload-icon {
+    font-size: 60px;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.upload-card h2 {
+    color: var(--dark-color);
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.upload-card p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.file-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 20px;
+}
+
+.file-label:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(67, 97, 238, 0.05);
+}
+
+.file-label i {
+    font-size: 40px;
+    color: var(--primary-color);
+    margin-top: 15px;
+}
+
+.submit-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    background: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}
+
+.submit-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.file-requirements {
+    margin-top: 25px;
+    color: #777;
+    font-size: 14px;
+    text-align: left;
+}
+
+.file-requirements p {
+    margin-bottom: 5px;
+}
+
+.file-requirements i {
+    margin-right: 8px;
+    color: var(--accent-color);
+}
+
+.error-message, .success-message {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.error-message {
+    background-color: rgba(255, 51, 51, 0.1);
+    color: var(--error-color);
+}
+
+.success-message {
+    background-color: rgba(75, 181, 67, 0.1);
+    color: var(--success-color);
+}
+
+.error-message i, .success-message i {
+    margin-right: 10px;
+}
+
+.download-link {
+    display: inline-block;
+    margin-left: 15px;
+    color: var(--success-color);
+    font-weight: 500;
+    text-decoration: none;
+    border-bottom: 1px dashed var(--success-color);
+}
+
+.download-link:hover {
+    color: #3a8a34;
+    border-bottom-color: #3a8a34;
+}
+
+@media (max-width: 576px) {
+    .upload-card {
+        padding: 30px 20px;
+    }
+}

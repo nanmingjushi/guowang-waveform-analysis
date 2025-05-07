@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xls转报告生成器</title>
+    <link rel="stylesheet" href="./css/all.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/vue.js"></script>
+    <script src="./js/axios.js"></script>
+</head>
+<body>
+<div id="app">
+    <div class="container">
+        <div class="upload-card"
+             @dragover.prevent="dragover"
+             @drop.prevent="drop"
+             @dragleave="dragleave"
+             :class="{ 'drag-active': isDragging }">
+
+            <div class="upload-icon">
+                <i class="fas fa-file-excel"></i>
+            </div>
+
+            <h2>Xls转报告生成器</h2>
+            <p>上传您的Xls，生成专业报告Doc文件</p>
+
+            <form @submit.prevent="uploadFile" class="upload-form">
+                <input type="file" id="file" ref="file" @change="handleFileChange" accept=".xls,.xlsx" hidden>
+                <label for="file" class="file-label">
+                    <span v-if="!selectedFile">选择Xls文件</span>
+                    <span v-else>{{ selectedFile.name }}</span>
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </label>
+
+                <button type="submit" class="submit-btn" :disabled="!selectedFile || isLoading">
+                    <span v-if="!isLoading">生成报告</span>
+                    <span v-else>
+                            <i class="fas fa-spinner fa-spin"></i> 处理中...
+                        </span>
+                </button>
+            </form>
+
+            <div class="file-requirements">
+                <p><i class="fas fa-info-circle"></i> 支持格式: .xls </p>
+            </div>
+        </div>
+
+        <div v-if="error" class="error-message">
+            <i class="fas fa-exclamation-circle"></i> {{ error }}
+        </div>
+
+        <div v-if="success" class="success-message">
+            <i class="fas fa-check-circle"></i> {{ success }}
+            <a v-if="downloadUrl" :href="downloadUrl" class="download-link">
+                <i class="fas fa-download"></i> 下载报告
+            </a>
+        </div>
+    </div>
+</div>
+
+<script src="./js/script.js"></script>
+</body>
+</html>
