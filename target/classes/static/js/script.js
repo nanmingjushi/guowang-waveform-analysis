@@ -75,6 +75,35 @@ new Vue({
                 .finally(() => {
                     this.isLoading = false;
                 });
+        },
+        downloadReport() {
+            if (!this.downloadUrl) return;
+            // 获取文件名（如 /download/xxx.docx）
+            let filename = this.downloadUrl.split('/').pop() || 'report.docx';
+
+            fetch(this.downloadUrl)
+                .then(resp => {
+                    if (!resp.ok) throw new Error('下载失败');
+                    return resp.blob();
+                })
+                .then(blob => {
+                    // 创建下载链接对象
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = filename; // 这行让浏览器弹出“另存为”
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                })
+                .catch(err => {
+                    this.error = '下载失败，请稍后重试';
+                    console.error(err);
+                });
         }
+
+
     }
 });

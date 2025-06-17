@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xls转报告生成器</title>
+    <title>电能质量测试报告生成</title>
     <link rel="stylesheet" href="./css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/vue.js"></script>
@@ -22,8 +22,8 @@
                 <i class="fas fa-file-excel"></i>
             </div>
 
-            <h2>Xls转报告生成器</h2>
-            <p>上传您的Xls，生成专业报告Doc文件</p>
+            <h2>电能质量测试报告生成</h2>
+            <p>上传您的Xls，生成电能质量测试报告文件</p>
 
             <form @submit.prevent="uploadFile" class="upload-form">
                 <input type="file" id="file" ref="file" @change="handleFileChange" accept=".xls,.xlsx" hidden>
@@ -52,9 +52,10 @@
 
         <div v-if="success" class="success-message">
             <i class="fas fa-check-circle"></i> {{ success }}
-            <a v-if="downloadUrl" :href="downloadUrl" class="download-link">
+            <a v-if="downloadUrl" href="javascript:;" class="download-link" @click="downloadReport">
                 <i class="fas fa-download"></i> 下载报告
             </a>
+
         </div>
     </div>
 </div>

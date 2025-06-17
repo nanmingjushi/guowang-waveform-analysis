@@ -1,6 +1,0 @@
-spring:
-  application:
-    name: guowang-waveform-analysis
-  web:
-    resources:
-      static-locations: classpath:/static/
