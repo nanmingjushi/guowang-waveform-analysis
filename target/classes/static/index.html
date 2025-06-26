@@ -24,13 +24,20 @@
             </div>
 
             <h2>电能质量测试报告生成</h2>
-            <p>上传您的Xls，生成电能质量测试报告文件</p>
+            <p>上传您的Xls和Docx模板，生成电能质量测试报告文件</p>
 
             <form @submit.prevent="uploadFile" class="upload-form">
                 <input type="file" id="file" ref="file" @change="handleFileChange" accept=".xls,.xlsx" hidden>
                 <label for="file" class="file-label">
                     <span v-if="!selectedFile">选择Xls文件</span>
                     <span v-else>{{ selectedFile.name }}</span>
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </label>
+
+                <input type="file" id="templateFile" ref="templateFile" @change="handleTemplateFileChange" accept=".docx" hidden>
+                <label for="templateFile" class="file-label">
+                    <span v-if="!selectedTemplateFile">选择Docx模板文件</span>
+                    <span v-else>{{ selectedTemplateFile.name }}</span>
                     <i class="fas fa-cloud-upload-alt"></i>
                 </label>
 

@@ -2,6 +2,7 @@ new Vue({
     el: '#app',
     data: {
         selectedFile: null,
+        selectedTemplateFile: null,
         isDragging: false,
         isLoading: false,
         error: null,
@@ -11,6 +12,10 @@ new Vue({
     methods: {
         handleFileChange(e) {
             this.selectedFile = e.target.files[0];
+            this.validateFile();
+        },
+        handleTemplateFileChange(e) {
+            this.selectedTemplateFile = e.target.files[0];
             this.validateFile();
         },
         dragover() {
@@ -28,26 +33,37 @@ new Vue({
         validateFile() {
             this.error = null;
 
-            if (!this.selectedFile) return;
+            if (!this.selectedFile || !this.selectedTemplateFile) return;
 
-            const validTypes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
-            const fileType = this.selectedFile.type;
+            const validExcelTypes = ['application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+            const validDocxTypes = ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
-            if (!validTypes.includes(fileType) &&
+            const excelFileType = this.selectedFile.type;
+            const docxFileType = this.selectedTemplateFile.type;
+
+            if (!validExcelTypes.includes(excelFileType) &&
                 !this.selectedFile.name.match(/\.(xls|xlsx)$/)) {
-                this.error = '请上传有效的Excel文件 (.xls 或 .xlsx)';
+                this.error = '请上传有效的 Excel 文件 (.xls 或 .xlsx)';
                 this.selectedFile = null;
                 return;
             }
 
-            if (this.selectedFile.size > 10 * 1024 * 1024) {
-                this.error = '文件大小不能超过10MB';
+            if (!validDocxTypes.includes(docxFileType) &&
+                !this.selectedTemplateFile.name.match(/\.docx$/)) {
+                this.error = '请上传有效的 DOCX 模板文件';
+                this.selectedTemplateFile = null;
+                return;
+            }
+
+            if (this.selectedFile.size > 10 * 1024 * 1024 || this.selectedTemplateFile.size > 10 * 1024 * 1024) {
+                this.error = '文件大小不能超过 10MB';
                 this.selectedFile = null;
+                this.selectedTemplateFile = null;
                 return;
             }
         },
         uploadFile() {
-            if (!this.selectedFile) return;
+            if (!this.selectedFile || !this.selectedTemplateFile) return;
 
             this.isLoading = true;
             this.error = null;
@@ -56,8 +72,8 @@ new Vue({
 
             const formData = new FormData();
             formData.append('file', this.selectedFile);
+            formData.append('templateFile', this.selectedTemplateFile);
 
-            // 这里替换为您的实际API端点
             axios.post('/upload', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
@@ -65,7 +81,6 @@ new Vue({
             })
                 .then(response => {
                     this.success = '报告生成成功！';
-                    // 假设返回数据中包含下载URL
                     this.downloadUrl = response.data.downloadUrl;
                 })
                 .catch(error => {
@@ -78,7 +93,6 @@ new Vue({
         },
         downloadReport() {
             if (!this.downloadUrl) return;
-            // 获取文件名（如 /download/xxx.docx）
             let filename = this.downloadUrl.split('/').pop() || 'report.docx';
 
             fetch(this.downloadUrl)
@@ -87,12 +101,11 @@ new Vue({
                     return resp.blob();
                 })
                 .then(blob => {
-                    // 创建下载链接对象
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.style.display = 'none';
                     a.href = url;
-                    a.download = filename; // 这行让浏览器弹出“另存为”
+                    a.download = filename;
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
@@ -103,7 +116,5 @@ new Vue({
                     console.error(err);
                 });
         }
-
-
     }
 });

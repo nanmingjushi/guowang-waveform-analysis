@@ -21,15 +21,13 @@ public class XlsController {
     private XlsService xlsService;
 
     @PostMapping("/upload")
-    public Map<String, Object> upload(@RequestParam("file") MultipartFile file) {
+    public Map<String, Object> upload(@RequestParam("file") MultipartFile file, @RequestParam("templateFile") MultipartFile templateFile) {
         Map<String, Object> result = new HashMap<>();
         try {
-            String outputPath = xlsService.processExcelFile(file);
-            // 假设 outputPath = "outputs/output.docx" 或 "outputs\\output.docx"
+            String outputPath = xlsService.processExcelFile(file, templateFile);
             String fileName = outputPath.substring(outputPath.lastIndexOf(File.separator) + 1);
             String downloadUrl = "/download/" + fileName;
             result.put("downloadUrl", downloadUrl);
-
             result.put("code", 0);
             result.put("msg", "ok");
         } catch (Exception e) {
