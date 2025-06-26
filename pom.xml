@@ -112,7 +112,6 @@
                 <version>3.0.2</version>
                 <configuration>
                     <mainClass>com.example.guowangwaveformanalysis.GuowangWaveformAnalysisApplication</mainClass>
-                    <skip>true</skip>
                 </configuration>
                 <executions>
                     <execution>
