@@ -114,12 +114,20 @@ public class XlsServiceImpl implements XlsService {
             setTableTitle(doc, tables.get(3), "表1.4  " + monitorPosition + "电压偏差统计表");
             fillVoltageDeviationTable(tables.get(3), data.voltageHarmonicData);
         }
+
         // 插入图片
         if (images != null) {
             for (int i = 0; i < images.length; i++) {
                 String placeholder = "{{image" + (i + 1) + "}}";
                 try (InputStream imgStream = images[i].getInputStream()) {
-                    insertImageAtPlaceHolder(doc, placeholder, imgStream, detectImageType(images[i].getOriginalFilename()), 400, 250);
+                    insertImageAndModifyCaption(
+                            doc,
+                            placeholder,
+                            imgStream,
+                            detectImageType(images[i].getOriginalFilename()),
+                            400, 250,    // 这里宽高就是400*250像素
+                            monitorPosition
+                    );
                 } catch (Exception e) {
                     log.warn("图片插入失败: {}", e.getMessage());
                 }
@@ -537,37 +545,56 @@ public class XlsServiceImpl implements XlsService {
     }
 
     // 替换占位符为图片
-    private void insertImageAtPlaceHolder(XWPFDocument doc, String placeholder, InputStream imageStream, int imageType, int width, int height) throws Exception {
-        for (XWPFParagraph para : doc.getParagraphs()) {
+    private void insertImageAndModifyCaption(
+            XWPFDocument doc,
+            String placeholder,
+            InputStream imageStream,
+            int imageType,
+            int widthPx,
+            int heightPx,
+            String monitorPosition
+    ) throws Exception {
+        List<XWPFParagraph> paragraphs = doc.getParagraphs();
+        for (int i = 0; i < paragraphs.size(); i++) {
+            XWPFParagraph para = paragraphs.get(i);
             String text = para.getText();
             if (text != null && text.contains(placeholder)) {
-                // 清空原内容
+                // 清空占位符段落并插入图片
                 int runCount = para.getRuns().size();
-                for (int i = runCount - 1; i >= 0; i--) {
-                    para.removeRun(i);
-                }
+                for (int j = runCount - 1; j >= 0; j--) para.removeRun(j);
                 XWPFRun run = para.createRun();
-                run.addPicture(imageStream, imageType, "image", Units.toEMU(width), Units.toEMU(height));
-                return;
-            }
-        }
-        // 如果还有表格中的占位符（可选扩展）
-        for (XWPFTable table : doc.getTables()) {
-            for (XWPFTableRow row : table.getRows()) {
-                for (XWPFTableCell cell : row.getTableCells()) {
-                    for (XWPFParagraph para : cell.getParagraphs()) {
-                        String text = para.getText();
-                        if (text != null && text.contains(placeholder)) {
-                            int runCount = para.getRuns().size();
-                            for (int i = runCount - 1; i >= 0; i--) {
-                                para.removeRun(i);
+                run.addPicture(imageStream, imageType, "image",
+                        Units.toEMU(widthPx), Units.toEMU(heightPx));
+
+                // 自动替换下一个段落（图名）
+                if (i + 1 < paragraphs.size()) {
+                    XWPFParagraph captionPara = paragraphs.get(i + 1);
+                    String origCaption = captionPara.getText();
+                    String newCaption = origCaption;
+                    if (origCaption != null) {
+                        // 只判断开头为“图1.1”，其余均加监测位置
+                        if (origCaption.trim().startsWith("图1.1")) {
+                            newCaption = origCaption;
+                        } else {
+                            int firstSpace = origCaption.indexOf(' ');
+                            if (firstSpace != -1 && firstSpace + 1 < origCaption.length()) {
+                                newCaption = origCaption.substring(0, firstSpace + 1)
+                                        + " " + monitorPosition
+                                        + origCaption.substring(firstSpace + 1);
+                            } else {
+                                newCaption = origCaption + " " + monitorPosition;
                             }
-                            XWPFRun run = para.createRun();
-                            run.addPicture(imageStream, imageType, "image", Units.toEMU(width), Units.toEMU(height));
-                            return;
                         }
                     }
+                    int capRunCount = captionPara.getRuns().size();
+                    for (int j = capRunCount - 1; j >= 0; j--) captionPara.removeRun(j);
+                    XWPFRun capRun = captionPara.createRun();
+                    capRun.setText(newCaption);
+                    capRun.setFontFamily("SimSun");
+                    capRun.setFontSize(12); // 小四
                 }
+
+                return;
             }
         }
     }
