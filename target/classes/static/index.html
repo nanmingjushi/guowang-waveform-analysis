@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>电能质量测试报告生成</title>
+    <title>电能质量测试报告自动化生成</title>
     <link rel="stylesheet" href="./css/all.min.css">
     <link rel="stylesheet" href="./css/style.css">
     <script src="./js/vue.js"></script>
@@ -23,7 +23,7 @@
                 <i class="fas fa-file-excel"></i>
             </div>
 
-            <h2>电能质量测试报告生成</h2>
+            <h2>电能质量测试报告自动化生成</h2>
             <p>上传您的Xls和Docx模板，生成电能质量测试报告文件</p>
 
             <form @submit.prevent="uploadFile" class="upload-form">
@@ -38,6 +38,19 @@
                 <label for="templateFile" class="file-label">
                     <span v-if="!selectedTemplateFile">选择Docx模板文件</span>
                     <span v-else>{{ selectedTemplateFile.name }}</span>
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </label>
+
+                <!-- 图片上传，支持多选 -->
+                <input type="file" id="imageFiles" ref="imageFiles" @change="handleImagesChange" accept="image/*" multiple hidden>
+                <label for="imageFiles" class="file-label">
+                    <span v-if="!selectedImages.length">请按文档模板图片插入顺序依次选择图片</span>
+                    <span v-else>
+                        已选{{ selectedImages.length }}张图片
+                        <template v-for="img in selectedImages">
+                            <span style="display:inline-block;margin-left:8px;color:#5b5b5b;">{{ img.name }}</span>
+                        </template>
+                    </span>
                     <i class="fas fa-cloud-upload-alt"></i>
                 </label>
 

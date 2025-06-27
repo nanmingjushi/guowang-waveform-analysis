@@ -3,6 +3,7 @@ new Vue({
     data: {
         selectedFile: null,
         selectedTemplateFile: null,
+        selectedImages: [],         // 新增：多图片数组
         isDragging: false,
         isLoading: false,
         error: null,
@@ -17,6 +18,9 @@ new Vue({
         handleTemplateFileChange(e) {
             this.selectedTemplateFile = e.target.files[0];
             this.validateFile();
+        },
+        handleImagesChange(e) { // 新增：处理多图片选择
+            this.selectedImages = Array.from(e.target.files);
         },
         dragover() {
             this.isDragging = true;
@@ -73,6 +77,11 @@ new Vue({
             const formData = new FormData();
             formData.append('file', this.selectedFile);
             formData.append('templateFile', this.selectedTemplateFile);
+
+            // 新增：多图片上传，images 为后端参数名
+            this.selectedImages.forEach(file => {
+                formData.append('images', file, file.name);
+            });
 
             axios.post('/upload', formData, {
                 headers: {

@@ -9,6 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 public interface XlsService {
-    String processExcelFile(MultipartFile file, MultipartFile templateFile) throws Exception;
+    String processExcelFile(MultipartFile file, MultipartFile templateFile, MultipartFile[] images) throws Exception;
 
 }

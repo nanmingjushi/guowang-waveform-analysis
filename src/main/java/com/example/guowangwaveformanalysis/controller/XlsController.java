@@ -21,10 +21,14 @@ public class XlsController {
     private XlsService xlsService;
 
     @PostMapping("/upload")
-    public Map<String, Object> upload(@RequestParam("file") MultipartFile file, @RequestParam("templateFile") MultipartFile templateFile) {
+    public Map<String, Object> upload(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("templateFile") MultipartFile templateFile,
+            @RequestParam(value = "images", required = false) MultipartFile[] images
+    ) {
         Map<String, Object> result = new HashMap<>();
         try {
-            String outputPath = xlsService.processExcelFile(file, templateFile);
+            String outputPath = xlsService.processExcelFile(file, templateFile, images); // 传入 images
             String fileName = outputPath.substring(outputPath.lastIndexOf(File.separator) + 1);
             String downloadUrl = "/download/" + fileName;
             result.put("downloadUrl", downloadUrl);
@@ -36,6 +40,7 @@ public class XlsController {
         }
         return result;
     }
+
 
     @GetMapping("/download/{fileName:.+}")
     public void downloadFile(@PathVariable String fileName, HttpServletResponse response) throws IOException {
