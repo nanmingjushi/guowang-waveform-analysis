@@ -13,6 +13,8 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.poi.util.Units;
 
 import cn.hutool.poi.excel.ExcelReader;
@@ -30,11 +32,11 @@ public class XlsServiceImpl implements XlsService {
     private static final String OUTPUT_FILE_NAME = "output.docx";
 
     @Override
-    public String processExcelFile(MultipartFile excelFile, MultipartFile templateFile, MultipartFile[] images) throws Exception {
+    public String processExcelFile(MultipartFile excelFile, MultipartFile templateFile, MultipartFile[] images, Map<String, String> replaceMap, List<Map<String, String>> measurementList) throws Exception {
         try (InputStream excelStream = excelFile.getInputStream();
              InputStream templateStream = templateFile.getInputStream()) {
             ExcelSheetData data = parseExcelFromStream(excelStream);
-            String outputPath = generateWordDocument(data, templateStream,images);
+            String outputPath = generateWordDocument(data, templateStream, images, replaceMap, measurementList);
             log.info("Word文档已生成：{}", outputPath);
             return outputPath;
         } catch (Exception e) {
@@ -42,6 +44,7 @@ public class XlsServiceImpl implements XlsService {
             throw e;
         }
     }
+
 
     //从Excel输入流中解析需要的数据，封装到ExcelSheetData对象
     private ExcelSheetData parseExcelFromStream(InputStream excelStream) {
@@ -89,9 +92,75 @@ public class XlsServiceImpl implements XlsService {
         }
     }
 
+    // ======== 全局字段批量替换 =======
+    private void replacePlaceholders(XWPFDocument doc, Map<String, String> replaceMap) {
+        // 段落
+        for (XWPFParagraph para : doc.getParagraphs()) {
+            for (XWPFRun run : para.getRuns()) {
+                String text = run.getText(0);
+                if (text != null) {
+                    for (Map.Entry<String, String> entry : replaceMap.entrySet()) {
+                        if (text.contains("{{" + entry.getKey() + "}}")) {
+                            text = text.replace("{{" + entry.getKey() + "}}", entry.getValue());
+                        }
+                    }
+                    run.setText(text, 0);
+                }
+            }
+        }
+        // 表格
+        for (XWPFTable table : doc.getTables()) {
+            for (XWPFTableRow row : table.getRows()) {
+                for (XWPFTableCell cell : row.getTableCells()) {
+                    for (XWPFParagraph para : cell.getParagraphs()) {
+                        for (XWPFRun run : para.getRuns()) {
+                            String text = run.getText(0);
+                            if (text != null) {
+                                for (Map.Entry<String, String> entry : replaceMap.entrySet()) {
+                                    if (text.contains("{{" + entry.getKey() + "}}")) {
+                                        text = text.replace("{{" + entry.getKey() + "}}", entry.getValue());
+                                    }
+                                }
+                                run.setText(text, 0);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     //根据解析后的数据 data 和 Word 模板 templateStream，生成最终输出的 Word 报告文档。
-    private String generateWordDocument(ExcelSheetData data, InputStream templateStream, MultipartFile[] images) throws IOException {
+    private String generateWordDocument(
+            ExcelSheetData data,
+            InputStream templateStream,
+            MultipartFile[] images,
+            Map<String, String> replaceMap,
+            List<Map<String, String>> measurementList
+    ) throws IOException {
         XWPFDocument doc = new XWPFDocument(templateStream);
+
+        // 拼接仪器参数，形如“仪器1 证书1 日期1\n仪器2 证书2 日期2”
+        if (measurementList != null && !measurementList.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (Map<String, String> item : measurementList) {
+                String measurement = item.getOrDefault("measurement", "");
+                String certNo = item.getOrDefault("certificateNo", "");
+                String certDate = item.getOrDefault("certificateDate", "");
+                sb.append(measurement).append("  ");
+                sb.append(certNo).append("  ");
+                sb.append(certDate).append("\n");
+            }
+            replaceMap.put("measurement", sb.toString().trim());
+        } else {
+            replaceMap.put("measurement", ""); // 防止占位符未被替换
+        }
+
+        // 替换所有 {{xxx}} 字段
+        if (replaceMap != null && !replaceMap.isEmpty()) {
+            System.out.println("替换字段：" + replaceMap);
+            replacePlaceholders(doc, replaceMap);
+        }
 
         // 获取监测位置
         String rawMonitorPosition = data.getVoltageHarmonicData().get(1).get(0).toString();

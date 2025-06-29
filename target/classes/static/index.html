@@ -54,6 +54,83 @@
                     <i class="fas fa-cloud-upload-alt"></i>
                 </label>
 
+                <!-- 参数输入区 -->
+                <div class="form-group">
+                    <label>报告编号：</label>
+                    <input v-model="fields.reportNo" placeholder="填写报告编号" >
+                </div>
+                <div class="form-group">
+                    <label>委托单位：</label>
+                    <input v-model="fields.client" placeholder="填写委托单位">
+                </div>
+                <div class="form-group">
+                    <label>委托单位地址：</label>
+                    <input v-model="fields.addressOfClient" placeholder="填写委托单位地址">
+                </div>
+                <div class="form-group">
+                    <label>被测单位：</label>
+                    <input v-model="fields.applicant" placeholder="填写被测单位">
+                </div>
+                <div class="form-group">
+                    <label>被测单位地址：</label>
+                    <input v-model="fields.addressOfApplicant" placeholder="填写被测单位地址">
+                </div>
+                <div class="form-group">
+                    <label>测试地点：</label>
+                    <input v-model="fields.testSite" placeholder="填写测试地点">
+                </div>
+                <div class="form-group" v-for="(item, idx) in fields.measurements" :key="idx" style="margin-bottom:8px;">
+                    <select v-model="item.measurement" @change="onMeasurementChange(idx)">
+                        <option value="">请选择所使用的工器具</option>
+                        <option>FLUKE-1777</option>
+                        <option>选项2</option>
+                        <option>选项3</option>
+                        <!-- 其它可选仪器 -->
+                    </select>
+                    <input v-model="item.certificateNo" placeholder="证书编号" style="width:160px;">
+                    <input v-model="item.certificateDate" placeholder="有效期至" style="width:100px;">
+                    <button type="button" @click="removeMeasurement(idx)" v-if="fields.measurements.length>1">删除</button>
+                    <button type="button" @click="addMeasurement" v-if="idx===fields.measurements.length-1">添加</button>
+                </div>
+
+                <div class="form-group">
+                    <label>测试开始时间：</label>
+                    <div class="datetime-row">
+                        <input v-model="fields.startYear"  placeholder="年" class="time-input"> <span class="time-sep">年</span>
+                        <input v-model="fields.startMonth" placeholder="月" class="time-input"> <span class="time-sep">月</span>
+                        <input v-model="fields.startDay"   placeholder="日" class="time-input"> <span class="time-sep">日</span>
+                        <input v-model="fields.startHour"  placeholder="时" class="time-input"> <span class="time-sep">时</span>
+                        <input v-model="fields.startMinute" placeholder="分" class="time-input"> <span class="time-sep">分</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>测试结束时间：</label>
+                    <div class="datetime-row">
+                        <input v-model="fields.endYear"  placeholder="年" class="time-input"> <span class="time-sep">年</span>
+                        <input v-model="fields.endMonth" placeholder="月" class="time-input"> <span class="time-sep">月</span>
+                        <input v-model="fields.endDay"   placeholder="日" class="time-input"> <span class="time-sep">日</span>
+                        <input v-model="fields.endHour"  placeholder="时" class="time-input"> <span class="time-sep">时</span>
+                        <input v-model="fields.endMinute" placeholder="分" class="time-input"> <span class="time-sep">分</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>测试电压等级：</label>
+                    <select v-model="fields.voltage">
+                        <option value="">请选择电压等级</option>
+                        <option>10kV</option>
+                        <option>选项2</option>
+                        <option>选项3</option>
+                        <option>选项4</option>
+                        <!-- 可继续加其它常用等级 -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>测试地点spot：</label>
+                    <input v-model="fields.spot" placeholder="填写测试地点spot" />
+                </div>
+
+
                 <button type="submit" class="submit-btn" :disabled="!selectedFile || isLoading">
                     <span v-if="!isLoading">生成报告</span>
                     <span v-else>
