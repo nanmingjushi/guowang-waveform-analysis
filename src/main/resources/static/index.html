@@ -80,18 +80,25 @@
                     <input v-model="fields.testSite" placeholder="填写测试地点">
                 </div>
                 <div class="form-group" v-for="(item, idx) in fields.measurements" :key="idx" style="margin-bottom:8px;">
-                    <select v-model="item.measurement" @change="onMeasurementChange(idx)">
-                        <option value="">请选择所使用的工器具</option>
-                        <option>FLUKE-1777</option>
-                        <option>选项2</option>
-                        <option>选项3</option>
+                    <input
+                            v-model="item.measurement"
+                            list="measurementList"
+                            placeholder="工器具名称/型号（可选/可输）"
+                            @change="onMeasurementChange(idx)"
+                            style="width:180px;"
+                    />
+                    <datalist id="measurementList">
+                        <option value="FLUKE-1777"></option>
+                        <option value="选项2"></option>
+                        <option value="选项3"></option>
                         <!-- 其它可选仪器 -->
-                    </select>
+                    </datalist>
                     <input v-model="item.certificateNo" placeholder="证书编号" style="width:160px;">
                     <input v-model="item.certificateDate" placeholder="有效期至" style="width:100px;">
                     <button type="button" @click="removeMeasurement(idx)" v-if="fields.measurements.length>1">删除</button>
                     <button type="button" @click="addMeasurement" v-if="idx===fields.measurements.length-1">添加</button>
                 </div>
+
 
                 <div class="form-group">
                     <label>测试开始时间：</label>
@@ -129,6 +136,19 @@
                     <label>测试地点spot：</label>
                     <input v-model="fields.spot" placeholder="填写测试地点spot" />
                 </div>
+
+                <!-- 环境温度 -->
+                <div class="form-group">
+                    <label>环境温度 (℃)：</label>
+                    <input v-model="fields.environmentTemperature" placeholder="填写环境温度(℃)" />
+                </div>
+                <!-- 相对湿度 -->
+                <div class="form-group">
+                    <label>相对湿度 (%)：</label>
+                    <input v-model="fields.relativeHumidity"  placeholder="填写相对湿度(%)" />
+                </div>
+
+
 
 
                 <button type="submit" class="submit-btn" :disabled="!selectedFile || isLoading">

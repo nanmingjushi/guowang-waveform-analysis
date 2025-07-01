@@ -35,6 +35,8 @@ public class XlsController {
             @RequestParam("testSite") String testSite,
             @RequestParam("voltage") String voltage,
             @RequestParam("spot") String spot,
+            @RequestParam("environmentTemperature") String environmentTemperature,
+            @RequestParam("relativeHumidity") String relativeHumidity,
 
             // 时间
             @RequestParam("startYear") String startYear,
@@ -62,6 +64,8 @@ public class XlsController {
             replaceMap.put("testSite", testSite);
             replaceMap.put("voltage", voltage);
             replaceMap.put("spot", spot);
+            replaceMap.put("environmentTemperature", environmentTemperature);
+            replaceMap.put("relativeHumidity", relativeHumidity);
             replaceMap.put("startYear", startYear);
             replaceMap.put("startMonth", startMonth);
             replaceMap.put("startDay", startDay);

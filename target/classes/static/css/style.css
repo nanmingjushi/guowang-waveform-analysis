@@ -26,20 +26,48 @@ body {
 
 .container {
     width: 100%;
-    max-width: 500px;
+    max-width: 1200px;
 }
 
 .upload-card {
     background: white;
     border-radius: 15px;
-    padding: 40px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 40px 60px 32px 60px; /* 上左右下 */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     text-align: center;
-    transition: all 0.3s ease;
+    max-width: 750px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.upload-card.drag-active {
-    border: 2px dashed var(--primary-color);
+.upload-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.file-label {
+    width: 100%;
+    min-width: 300px;
+    max-width: 100%;
+    padding: 20px 18px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 20px;
+}
+
+.file-label:hover {
+    border-color: var(--primary-color);
     background-color: rgba(67, 97, 238, 0.05);
 }
 
@@ -60,29 +88,6 @@ body {
     margin-bottom: 25px;
 }
 
-.file-label {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    border: 2px dashed #ddd;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-bottom: 20px;
-}
-
-.file-label:hover {
-    border-color: var(--primary-color);
-    background-color: rgba(67, 97, 238, 0.05);
-}
-
-.file-label i {
-    font-size: 40px;
-    color: var(--primary-color);
-    margin-top: 15px;
-}
-
 .submit-btn {
     background: var(--primary-color);
     color: white;
@@ -100,7 +105,7 @@ body {
 .submit-btn:hover {
     background: var(--secondary-color);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+    box-shadow: 0 5px 15px rgba(67,97,238,0.3);
 }
 
 .submit-btn:disabled {
@@ -116,15 +121,8 @@ body {
     font-size: 14px;
     text-align: left;
 }
-
-.file-requirements p {
-    margin-bottom: 5px;
-}
-
-.file-requirements i {
-    margin-right: 8px;
-    color: var(--accent-color);
-}
+.file-requirements p { margin-bottom: 5px; }
+.file-requirements i { margin-right: 8px; color: var(--accent-color); }
 
 .error-message, .success-message {
     margin-top: 20px;
@@ -135,20 +133,9 @@ body {
     align-items: center;
     justify-content: center;
 }
-
-.error-message {
-    background-color: rgba(255, 51, 51, 0.1);
-    color: var(--error-color);
-}
-
-.success-message {
-    background-color: rgba(75, 181, 67, 0.1);
-    color: var(--success-color);
-}
-
-.error-message i, .success-message i {
-    margin-right: 10px;
-}
+.error-message { background-color: rgba(255,51,51,0.1); color: var(--error-color);}
+.success-message { background-color: rgba(75,181,67,0.1); color: var(--success-color);}
+.error-message i, .success-message i { margin-right: 10px; }
 
 .download-link {
     display: inline-block;
@@ -158,14 +145,115 @@ body {
     text-decoration: none;
     border-bottom: 1px dashed var(--success-color);
 }
-
 .download-link:hover {
     color: #3a8a34;
     border-bottom-color: #3a8a34;
 }
 
-@media (max-width: 576px) {
-    .upload-card {
-        padding: 30px 20px;
-    }
+/* 表单部分 */
+.form-group {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: wrap;
 }
+.form-group label {
+    width: 120px;
+    text-align: right;
+    margin-right: 10px;
+    color: #333;
+    margin-bottom: 0;
+}
+.form-group input,
+.form-group select {
+    min-width: 140px;
+    max-width: 320px;
+    flex: 1;
+    width: auto;
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    margin-bottom: 0;
+    margin-right: 10px;
+}
+
+/* 多行仪器输入的按钮样式 */
+.form-group button {
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    margin-left: 4px;
+    padding: 4px 16px;
+    font-size: 13px;
+    transition: all 0.2s;
+    cursor: pointer;
+    outline: none;
+}
+.form-group button:hover {
+    background: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 2px 8px #b0c9fa;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+/* 时间多输入框紧凑横排 */
+.form-group .time-input {
+    width: 54px !important;
+    min-width: 30px !important;
+    max-width: 70px !important;
+    margin: 0 2px;
+    padding: 6px 4px;
+}
+.form-group .time-sep {
+    margin: 0 1px;
+    color: #666;
+}
+
+input[type="file"] { display: none; }
+
+@media (max-width: 900px) {
+    .upload-card { max-width: 98vw; padding: 20px 5vw; }
+}
+@media (max-width: 600px) {
+    .upload-card { padding: 16px 2vw; }
+    .form-group label { width: 90px; font-size: 13px; }
+    .form-group input, .form-group select { min-width: 80px; font-size: 13px;}
+}
+.datetime-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+}
+
+.time-input {
+    width: 56px;
+    min-width: 36px;
+    max-width: 66px;
+    padding: 6px 4px;
+    margin: 0 2px 0 0;
+    text-align: center;
+    font-size: 15px;
+}
+
+.time-sep {
+    margin-right: 10px;
+    color: #888;
+    font-size: 14px;
+    min-width: 18px;
+    text-align: center;
+}
+/* 针对工器具选择下拉框，设定更大的最小宽度 */
+.form-group select,
+select {
+    min-width: 200px;  /* 这里调大到200px或更大 */
+    max-width: 320px;
+}
+
+

@@ -181,7 +181,9 @@ public class XlsServiceImpl implements XlsService {
             fillFrequencyDeviationAndVoltageUnbalanceAndLongTermFlickerTable(tables.get(2), data.voltageHarmonicData,data.getPowerData());
             //电压偏差
             setTableTitle(doc, tables.get(3), "表1.4  " + monitorPosition + "电压偏差统计表");
-            fillVoltageDeviationTable(tables.get(3), data.voltageHarmonicData);
+            fillVoltageDeviationTable(tables.get(3), data.voltageHarmonicData, replaceMap);
+            System.out.println("maxVoltageDeviation: " + replaceMap.get("maxVoltageDeviation"));
+
         }
 
         // 插入图片
@@ -445,10 +447,10 @@ public class XlsServiceImpl implements XlsService {
 
         // 2. 填充数据
         //2.1 填充频率偏差数据
-        setCellText(table.getRow(1).getCell(1),formatDouble(frequency_max, 2));
-        setCellText(table.getRow(1).getCell(2),formatDouble(frequency_average, 2));
-        setCellText(table.getRow(1).getCell(3),formatDouble(frequency_min, 2));
-        setCellText(table.getRow(1).getCell(4),formatDouble(frequency_95, 2));
+        setCellText(table.getRow(1).getCell(1),formatDouble(frequency_max-50, 2));
+        setCellText(table.getRow(1).getCell(2),formatDouble(frequency_average-50, 2));
+        setCellText(table.getRow(1).getCell(3),formatDouble(frequency_min-50, 2));
+        setCellText(table.getRow(1).getCell(4),formatDouble(frequency_95-50, 2));
         setCellText(table.getRow(1).getCell(5),frequency_limit);
         //2.2 填充三相电压不平衡度数据
         setCellText(table.getRow(2).getCell(1),formatDouble(voltage_unbalance_max, 2));
@@ -481,7 +483,7 @@ public class XlsServiceImpl implements XlsService {
     }
 
     //电压偏差
-    private void fillVoltageDeviationTable(XWPFTable table, List<List<Object>> voltageHarmonicData) {
+    private void fillVoltageDeviationTable(XWPFTable table, List<List<Object>> voltageHarmonicData, Map<String, String> replaceMap) {
 
         // 1.1 数据提取（上偏差）
         double voltage_deviation_up_AB_max = getDoubleValue(voltageHarmonicData.get(63).get(2));
@@ -519,6 +521,11 @@ public class XlsServiceImpl implements XlsService {
         setCellText(table.getRow(3).getCell(5),formatDouble(voltage_deviation_down_AC_max, 2));
         setCellText(table.getRow(3).getCell(6),formatDouble(voltage_deviation_down_AC_min, 2));
         setCellText(table.getRow(3).getCell(7),formatDouble(voltage_deviation_down_limit, 2));
+
+        // 3. 找出上偏差中 AB/BC/AC 最大者
+        double max_voltage_deviation = Math.max(voltage_deviation_up_AB_max, Math.max(voltage_deviation_up_BC_max, voltage_deviation_up_AC_max));
+        replaceMap.put("maxVoltageDeviation", formatDouble(max_voltage_deviation,2));
+
 
     }
 

@@ -21,6 +21,8 @@ new Vue({
             spot: '',
             startYear: '', startMonth: '', startDay: '', startHour: '', startMinute: '',
             endYear: '', endMonth: '', endDay: '', endHour: '', endMinute: '',
+            environmentTemperature: '',
+            relativeHumidity: '',
             // 仪器信息支持多行
             measurements: [
                 { measurement: '', certificateNo: '', certificateDate: '' }
